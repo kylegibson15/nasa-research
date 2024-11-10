@@ -28,6 +28,7 @@ docker compose images --help
 ```
 
 ### 4. Run Docker Compose on the Project
+> It's important to include the `--build` flag
 ```shell
 docker compose up --build
 ```
