@@ -40,6 +40,7 @@ class CollectLunarSamplesUseCase:
 
             mission.samples = samples
             mission.stations = stations
+            
             logging.debug(mission)
             all_missions.append(mission)
             # landmarks = await self.api_client.list_landmarks_by_mission(mission)

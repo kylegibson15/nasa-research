@@ -27,3 +27,39 @@ docker compose images --help
 #  -q, --quiet           Only display IDs
 ```
 
+### 4. Run Docker Compose on the Project
+```shell
+docker compose up --build
+```
+
+### 5. Swagger API Docs
+Swagger API Docs can be found at `http://localhost:8000/docs`
+
+### 6. Initialize the Database
+- Run the `POST /init` endpoint from the Swagger UI. This will initialize the database by dropping all tables and then creating all tables.
+
+or by using cURL
+
+```shell
+curl -X 'POST' \
+    'http://localhost:8000/init' \
+    -H 'accept: application/json' \
+    -d ''
+```
+
+### 7. Collect NASA Lunar Mission Data
+- Run the `POST /collect-lunar-samples` endpoint from the Swagger UI. This will ingest data from the NASA Lunar Samples API.
+
+or 
+
+```shell
+curl -X 'POST' \
+    'http://localhost:8000/collect-lunar-samples' \
+    -H 'accept: application/json' \
+    -d ''
+```
+
+### Other Available APIs
+- `GET /missions`
+- `GET /samples`
+- `GET /stations`
