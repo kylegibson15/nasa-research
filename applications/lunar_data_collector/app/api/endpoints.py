@@ -1,37 +1,30 @@
-from contextlib import asynccontextmanager
 import logging
-from typing import AsyncGenerator
-from fastapi import Depends, FastAPI
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from typing import Annotated
+from uuid import UUID
+from fastapi import FastAPI, Path
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import SQLModel
-from sqlalchemy.orm import sessionmaker
 
-from app.core.use_cases.fetch_lunar_samples_data import FetchLunarSamplesDataUseCase
-from app.core.use_cases.fetch_mission_data import FetchTechPortMissionDataUseCase
+from app.core.use_cases.collect_lunar_samples.collect_lunar_samples import CollectLunarSamplesUseCase
+# from app.core.use_cases.fetch_mission_data import FetchTechPortMissionDataUseCase
+from app.core.use_cases.get_mission_by_id import GetMissionByIdUseCase
 from app.core.use_cases.get_missions import GetMissionsUseCase
+from app.core.use_cases.get_samples.get_samples import GetSamplesUseCase
+from app.core.use_cases.get_stations import GetStationsUseCase
 from app.infrastructure.data_access.mission.mission_repository import MissionRepository
 from app.infrastructure.data_access.sample.sample_repository import SampleRepository
+from app.infrastructure.data_access.station.station_repository import StationRepository
 from app.infrastructure.nasa_lunar_samples.nasa_lunar_samples_api_client import NasaLunarSamplesApiClient
-from app.infrastructure.nasa_tech_port_api_client import NasaTechPortApiClient
+# from app.infrastructure.nasa_tech_port_api_client import NasaTechPortApiClient
 from app.infrastructure.settings import Settings
 
 app = FastAPI()
 settings = Settings()
 
-engine = create_engine(
-    url=settings.pg_dsn,
-    echo=True,
-    future=True,
-    pool_size=20,
-    pool_recycle=3600,
-    max_overflow=20
-)
-
 async_engine = create_async_engine(
     url=settings.pg_async_dsn,
-    echo=True,
+    # echo=True,
     future=True,
     pool_size=20,
     pool_recycle=3600,
@@ -43,44 +36,45 @@ async def init_db():
         await conn.run_sync(SQLModel.metadata.drop_all)
         await conn.run_sync(SQLModel.metadata.create_all)
 
-@asynccontextmanager
-async def get_async_session() -> AsyncGenerator[AsyncSession, AsyncSession]:
-    async_session = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
-    async with async_session() as session:
-        yield session
-
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
 logger = logging.getLogger(__name__)
 
-@app.get("/")
-def base():
-    print(f"settings: {settings.model_dump()}")
-    return {"Status": "Ok"}
-
-@app.get("/init")
+@app.post("/init")
 async def init():
     await init_db()
     return {"Status": "Ok"}
 
-@app.get("/collect")
-def collect_lunar_data():
-    return {"Hello": "World"}
-
-@app.get("/collect-lunar-samples-data")
+@app.post("/collect-lunar-samples")
 async def collect_lunar_samples_data():
-    async with get_async_session() as session:
+    async with AsyncSession(async_engine) as session:
         try:
             api_client = NasaLunarSamplesApiClient(settings)
             mission_repository = MissionRepository(session)
             sample_repository = SampleRepository(session)
-            use_case = FetchLunarSamplesDataUseCase(api_client, mission_repository, sample_repository)
-            response = await use_case.execute()
-            logger.info(f"response: {response}")
-            return response
+            station_repository = StationRepository(session)
+            use_case = CollectLunarSamplesUseCase(
+                api_client, 
+                mission_repository, 
+                sample_repository,
+                station_repository
+            )
+            return await use_case.execute()
+        except Exception as e:
+            logging.error(e)
+        finally:
+            await session.close()
+
+@app.get("/mission/{mission_id}")
+async def get_mission_by_id(mission_id: Annotated[UUID | str, Path(title="The ID of the mission to get")],):
+    async with AsyncSession(async_engine) as session:
+        try:
+            mission_repository = MissionRepository(session)
+            use_case = GetMissionByIdUseCase(mission_repository)
+            return await use_case.execute(mission_id)
         except Exception as e:
             logging.error(e)
         finally:
@@ -88,35 +82,56 @@ async def collect_lunar_samples_data():
 
 @app.get("/missions")
 async def get_missions():
-    async with get_async_session() as session:
+    async with AsyncSession(async_engine) as session:
         try:
             mission_repository = MissionRepository(session)
             use_case = GetMissionsUseCase(mission_repository)
-            response = await use_case.execute()
-            print("\n\n----------\n\n")
-            print(response)
-            return response
+            return await use_case.execute()
         except Exception as e:
             logging.error(e)
         finally:
             await session.close()
 
-@app.get("/collect-mission-data")
-async def collect_mission_data(mission_id: str):
-    async with get_async_session() as session:
+@app.get("/samples")
+async def get_samples():
+    async with AsyncSession(async_engine) as session:
         try:
-            if mission_id is None:
-                raise ValueError(f"mission_id is required.")
-            
-            logger.info(f"mission_id: {mission_id}")
-            api_client = NasaTechPortApiClient(settings)
-            logger.info(f"api_client: {api_client}")
-            use_case = FetchTechPortMissionDataUseCase(api_gateway=api_client)
-            logger.info(f"use_case created")
-            response = await use_case.execute(mission_id)
-            logger.info(f"response received {response}")
-            return response
+            sample_repository = SampleRepository(session)
+            use_case = GetSamplesUseCase(sample_repository)
+            return await use_case.execute()
         except Exception as e:
             logging.error(e)
         finally:
             await session.close()
+
+@app.get("/stations")
+async def get_stations():
+    async with AsyncSession(async_engine) as session:
+        try:
+            station_repository = StationRepository(session)
+            use_case = GetStationsUseCase(station_repository)
+            return await use_case.execute()
+        except Exception as e:
+            logging.error(e)
+        finally:
+            await session.close()
+
+# @app.get("/collect-mission-data")
+# async def collect_mission_data(mission_id: str):
+#     async with get_async_session() as session:
+#         try:
+#             if mission_id is None:
+#                 raise ValueError(f"mission_id is required.")
+            
+#             logger.info(f"mission_id: {mission_id}")
+#             api_client = NasaTechPortApiClient(settings)
+#             logger.info(f"api_client: {api_client}")
+#             use_case = FetchTechPortMissionDataUseCase(api_gateway=api_client)
+#             logger.info(f"use_case created")
+#             response = await use_case.execute(mission_id)
+#             logger.info(f"response received {response}")
+#             return response
+#         except Exception as e:
+#             logging.error(e)
+#         finally:
+#             await session.close()

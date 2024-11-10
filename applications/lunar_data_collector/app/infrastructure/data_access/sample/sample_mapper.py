@@ -1,4 +1,3 @@
-from uuid import uuid4
 from app.core.entities.sample import Sample
 from app.infrastructure.data_access.mapper import Mapper
 from app.infrastructure.data_access.sample.sample_model import SampleModel
@@ -9,8 +8,7 @@ class SampleMapper(Mapper[SampleApiResponse, Sample, SampleModel]):
     def response_to_entity(sample_raw: SampleApiResponse) -> Sample:
         print(f"\nSAMPLE RESPONSE TO ENTITY:\n\t{sample_raw}\n")
         return Sample(
-            id=str(uuid4()),
-            sample_id=str(sample_raw["SAMPLEID"]) or "",
+            original_sample_id=str(sample_raw["SAMPLEID"]) or "",
             generic_id=sample_raw["GENERIC"] or "",
             bag_number=sample_raw["BAGNUMBER"] or "",
             original_weight=sample_raw["ORIGINALWEIGHT"] or 0.0,
@@ -19,8 +17,10 @@ class SampleMapper(Mapper[SampleApiResponse, Sample, SampleModel]):
             pristinity=sample_raw["PRISTINITY"] or 0.0,
             pristinity_date=sample_raw["PRISTINITYDATE"] or "",
             has_thin_section=sample_raw["HASTHINSECTION"] or False,
-            has_display_sample=sample_raw["HASDISPLAYSAMPLE"] or False,
-            generic_description=sample_raw["GENERICDESCRIPTION"] or ""
+            has_display=sample_raw["HASDISPLAYSAMPLE"] or False,
+            generic_description=sample_raw["GENERICDESCRIPTION"] or "",
+            mission_id=None,
+            mission=None
         )
 
     @staticmethod
@@ -28,7 +28,7 @@ class SampleMapper(Mapper[SampleApiResponse, Sample, SampleModel]):
         print(f"\nSAMPLE ENTITY TO MODEL\n\t{entity}\n")
         return SampleModel(
             id=entity.id,
-            sample_id=entity.sample_id,
+            original_sample_id=entity.original_sample_id,
             generic_id=entity.generic_id,
             bag_number=entity.bag_number,
             original_weight=entity.original_weight,
@@ -37,8 +37,10 @@ class SampleMapper(Mapper[SampleApiResponse, Sample, SampleModel]):
             pristinity=entity.pristinity,
             pristinity_date=entity.pristinity_date,
             has_thin_section=entity.has_thin_section,
-            has_display=entity.has_display_sample,
-            generic_description=entity.generic_description
+            has_display=entity.has_display,
+            generic_description=entity.generic_description,
+            mission_id=entity.mission_id,
+            # mission=MissionMapper.entity_to_model(entity.mission)
         )
 
     @staticmethod
@@ -46,7 +48,7 @@ class SampleMapper(Mapper[SampleApiResponse, Sample, SampleModel]):
         print(f"\nSAMPLE MODEL TO ENTITY\n\t{model}\n")
         return Sample(
             id=model.id,
-            sample_id=model.sample_id,
+            original_sample_id=model.original_sample_id,
             generic_id=model.generic_id,
             bag_number=model.bag_number,
             original_weight=model.original_weight,
@@ -55,6 +57,9 @@ class SampleMapper(Mapper[SampleApiResponse, Sample, SampleModel]):
             pristinity=model.pristinity,
             pristinity_date=model.pristinity_date,
             has_thin_section=model.has_thin_section,
-            has_display_sample=model.has_display,
-            generic_description=model.generic_description
+            has_display=model.has_display,
+            generic_description=model.generic_description,
+            mission_id=model.mission_id,
+            mission=None
+            # mission=MissionMapper.model_to_entity(model.mission)
         )

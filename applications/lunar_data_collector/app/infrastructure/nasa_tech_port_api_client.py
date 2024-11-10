@@ -28,7 +28,7 @@ class NasaTechPortApiClient(ApiGateway):
         
         logging.info("NasaTechPortApiClient successfully initialized.")
 
-    async def list_missions(self):
+    def list_missions(self):
         url = f"{self.curator_url}/{self.list_missions_path}"
         response = requests.get(url)
         response.raise_for_status()
@@ -36,17 +36,17 @@ class NasaTechPortApiClient(ApiGateway):
         logging.info(f"list missions data: {data}")
         return data
     
-    async def list_sample_classification(self):
+    def list_sample_classification(self):
         url = f"{self.curator_url}/{self.list_sample_classification_path}"
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
         logging.info(f"list sample classification data: {data}")
 
-    async def fetch_mission_data(self, mission_id: str) -> list[dict]:
+    def fetch_mission_data(self, mission_id: str) -> list[dict]:
         logging.info(f"NasaTechPortApiClient.fetch_mission_data called with mission_id: {mission_id}")
-        await self.list_missions()
-        await self.list_sample_classification()
+        self.list_missions()
+        self.list_sample_classification()
         # url = f"{self.base_url}/{mission_id}?api_key={self.nasa_api_key}"
         url = f"{self.curator_url}/{self.list_landmarks_by_mission_path(mission=mission_id)}"
         response = requests.get(url)

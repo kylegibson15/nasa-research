@@ -1,15 +1,16 @@
-from uuid import uuid4
 from app.core.entities.mission import Mission
 from app.infrastructure.data_access.mapper import Mapper
 from app.infrastructure.data_access.mission.mission_model import MissionModel
+# from app.infrastructure.data_access.sample.sample_mapper import SampleMapper
 
 class MissionMapper(Mapper[str, Mission, MissionModel]):
     @staticmethod
     def response_to_entity(mission_name: str) -> Mission:
         print(f"\nMISSION RESPONSE TO ENTITY: {mission_name}\n")
         return Mission(
-            id=str(uuid4()),
             name=mission_name,
+            samples=list(),
+            stations=list()
         )
     
     @staticmethod
@@ -17,7 +18,8 @@ class MissionMapper(Mapper[str, Mission, MissionModel]):
         print(f"\nMISSION ENTITY TO MODEL: {entity}\n")
         return MissionModel(
             id=entity.id,
-            name=entity.name
+            name=entity.name,
+            # samples=[SampleMapper.entity_to_model(sample) for sample in entity.samples]
         )
     
     @staticmethod
@@ -25,5 +27,8 @@ class MissionMapper(Mapper[str, Mission, MissionModel]):
         print(f"\nMISSION MODEL TO ENTITY: {model}\n")
         return Mission(
             id=model.id,
-            name=model.name
+            name=model.name,
+            samples=list(),
+            stations=list()
+            # samples=[SampleMapper.model_to_entity(sample) for sample in model.samples]
         )

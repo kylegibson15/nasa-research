@@ -7,11 +7,10 @@ from app.infrastructure.data_access.sample.sample_model import SampleModel
 class LandmarkModel(SQLModel, table=True):
      __tablename__ = "landmarks"
 
-     id: str = Field(primary_key=True, unique=True)
-     name: str = Field(nullable=False)
+     id: UUID | None = Field(default_factory=uuid4, primary_key=True, unique=True)
+     name: str = Field(unique=True)
      
-     samples: List[Optional["SampleModel"]] = Relationship(
-         back_populates="landmark", 
-         cascade_delete=True,
-         sa_relationship_kwargs={"lazy": "selectin"}
-     )
+    #  samples: List[Optional["SampleModel"]] = Relationship(
+    #      back_populates="landmark",
+    #      sa_relationship_kwargs={"lazy": "selectin"}
+    #  )

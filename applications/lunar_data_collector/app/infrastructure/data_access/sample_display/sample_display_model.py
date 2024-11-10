@@ -7,28 +7,28 @@ from app.infrastructure.data_access.sample.sample_model import SampleModel
 class SampleDisplayModel(SQLModel, table=True):
     __tablename__ = "sample_displays"
 
-    id: str = Field(primary_key=True, unique=True)
-    display_id: str = Field(nullable=False)
-    region: str = Field(nullable=False)
-    display_url: str = Field(nullable=False)
-    display_location: str = Field(nullable=False)
-    address_line_1: str = Field(nullable=False)
-    address_line_2: str = Field(nullable=True)
-    address_line_3: str = Field(nullable=True)
-    phone: str = Field(nullable=False)
-    latitude: str = Field(nullable=False)
-    longitude: str = Field(nullable=False)
-    city: str = Field(nullable=False)
-    state: str = Field(nullable=False)
-    country: str = Field(nullable=False)
-    country_id: str = Field(nullable=False)
+    id: UUID | None = Field(default_factory=uuid4, primary_key=True, unique=True)
+    display_id: str = Field() 
+    region: str = Field()
+    display_url: str = Field()
+    display_location: str = Field()
+    address_line_1: str = Field()
+    address_line_2: str = Field()
+    address_line_3: str = Field()
+    phone: str = Field()
+    latitude: str = Field()
+    longitude: str = Field()
+    city: str = Field()
+    state: str = Field()
+    country: str = Field()
+    country_id: str = Field()
     zoom_level: int = Field()
-    description: str = Field(nullable=False)
+    description: str = Field()
     generic: float = Field()
     speicific: float = Field()
      
-    sample: Optional["SampleModel"] = Relationship(
-          back_populates="display", 
-          cascade_delete=True,
-          sa_relationship_kwargs={"lazy": "selectin"}
-     )
+#     sample: Optional["SampleModel"] = Relationship(
+#           back_populates="display", 
+#           cascade_delete=True,
+#           sa_relationship_kwargs={"lazy": "selectin"}
+#      )

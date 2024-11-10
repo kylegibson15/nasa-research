@@ -1,8 +1,10 @@
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any
 
 @dataclass
 class Mission:
-    id: str | None
     name: str
-    # samples: List[Any] | None
+    samples: list[Any | None]
+    stations: list[Any | None]
+    id: str | None = None
+    

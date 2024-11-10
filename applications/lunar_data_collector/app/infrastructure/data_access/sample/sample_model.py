@@ -1,28 +1,27 @@
-from typing import Optional
 from uuid import UUID, uuid4
 from sqlmodel import Field, Relationship, SQLModel
 
 class SampleModel(SQLModel, table=True):
      __tablename__ = "samples"
 
-     id: str | None = Field(primary_key=True, unique=True)
-     sample_id: str | None = Field(nullable=False)
-     generic_id: str | None = Field(nullable=True)
-     bag_number: str | None = Field(nullable=True)
-     original_weight: float | None = Field(nullable=True)
-     sample_type: str | None = Field(nullable=True)
-     sample_subtype: str | None = Field(nullable=True)
-     pristinity: float | None = Field(nullable=True)
-     pristinity_date: str | None = Field(nullable=True)
-     has_thin_section: bool | None = Field(nullable=True)
-     has_display: bool | None = Field(nullable=True)
-     generic_description: str | None = Field(nullable=True)
+     id: UUID | None = Field(default_factory=uuid4, primary_key=True, unique=True)
+     original_sample_id: str | None = Field()
+     generic_id: str | None = Field()
+     bag_number: str | None = Field()
+     original_weight: float | None = Field()
+     sample_type: str | None = Field()
+     sample_subtype: str | None = Field()
+     pristinity: float | None = Field()
+     pristinity_date: str | None = Field()
+     has_thin_section: bool | None = Field()
+     has_display: bool | None = Field()
+     generic_description: str | None = Field()
 
-     mission_id: str | None = Field(default=None, foreign_key="missions.id")
-     mission: Optional["MissionModel"] = Relationship(
-         back_populates="samples",
-         sa_relationship_kwargs={"lazy": "selectin"}
-     )
+     mission_id: UUID = Field(default=None, foreign_key="missions.id")
+     # mission: "MissionModel" = Relationship(
+     #     back_populates="samples",
+     #     sa_relationship_kwargs={"lazy": "selectin"}
+     # )
 
      # station_id: str | None = Field(default=None, foreign_key="stations.id")
      # station: Optional["StationModel"] = Relationship(
