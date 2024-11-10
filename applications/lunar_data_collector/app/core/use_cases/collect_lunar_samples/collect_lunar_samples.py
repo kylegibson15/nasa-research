@@ -103,7 +103,7 @@ class CollectLunarSamplesUseCase:
         
         return samples
     
-    # async def _get_samples_mission_and_station(self, mission: Mission, station: Station) -> list[Sample]:
+    # async def _get_samples_by_mission_and_station(self, mission: Mission, station: Station) -> list[Sample]:
     #     samples_by_station = await self.api_client.samples_by_station(mission.name, station.name)
     #     samples = list()
         
