@@ -3,6 +3,7 @@ import time
 from typing import Annotated
 from uuid import UUID
 from fastapi import FastAPI, Path
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import SQLModel
@@ -43,8 +44,16 @@ def time_it(func):
 
     return wrapper
 
-app = FastAPI()
 settings = Settings()
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"]  # Allows all headers   
+
+)
 
 async_engine = create_async_engine(
     url=settings.pg_async_dsn,
@@ -116,7 +125,9 @@ async def get_missions():
     async with AsyncSession(async_engine) as session:
         try:
             mission_repository = MissionRepository(session)
-            use_case = GetMissionsUseCase(mission_repository)
+            sample_repository = SampleRepository(session)
+            station_repository = StationRepository(session)
+            use_case = GetMissionsUseCase(mission_repository, sample_repository, station_repository)
             return await use_case.execute()
         except Exception as e:
             logging.error(e)

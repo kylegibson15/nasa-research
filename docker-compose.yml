@@ -1,6 +1,15 @@
 version: '3.8'
 
 services:
+  lunar_ui:
+    build: 
+      context: ./applications/lunar_web_ui/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - lunar_data_collector
+
   lunar_db:
     image: postgres:latest
     ports:

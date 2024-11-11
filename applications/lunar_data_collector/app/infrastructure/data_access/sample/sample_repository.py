@@ -36,6 +36,15 @@ class SampleRepository:
             return SampleMapper.model_to_entity(sample) if sample else None
         except Exception as e:
             raise Exception(f"Failed to get sample by id... {e}") from e
+        
+    async def get_samples_by_mission_id(self, mission_id: UUID) -> list[Sample | None]:
+        try:
+            statement = select(SampleModel).where(SampleModel.mission_id == mission_id)
+            model = await self.session.exec(statement)
+            results = model.all()
+            return [SampleMapper.model_to_entity(model) for model in results]
+        except Exception as e:
+            raise Exception(f"Failed to get sample by mission id... {e}") from e
     
     async def get_sample_by_original_id(self, original_id: str) -> Sample | None:
         logging.debug(f"GET SMAPLE ORIGINAL ID: {original_id}")

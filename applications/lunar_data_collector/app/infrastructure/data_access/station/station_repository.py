@@ -27,6 +27,15 @@ class StationRepository:
             return StationMapper.model_to_entity(station) if station else None
         except Exception as e:
             raise Exception(f"Error while getting station by name - Error: {e}")
+        
+    async def get_stations_by_mission_id(self, mission_id: UUID) -> list[Station | None]:
+        try:
+            statement = select(StationModel).where(StationModel.mission_id == mission_id)
+            response = await self.session.exec(statement)
+            results = response.all()
+            return [StationMapper.model_to_entity(model) for model in results]
+        except Exception as e:
+            raise Exception(f"Error while getting station by mission id - Error: {e}")
 
     async def get_stations(self) -> list[Station | None]:
         try:
