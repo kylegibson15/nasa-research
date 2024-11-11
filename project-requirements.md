@@ -11,13 +11,13 @@
 - [x] Unit tests
 - [x] Data persistence
 	- [x] any data store
-- [ ] Rest collaboration internal or API endpoint
-- [ ] Product environment
+- [x] Rest collaboration internal or API endpoint
+- [ ] Production environment
 - [x] Integration tests
 - [ ] Using mock objects or any test doubles
 - [ ] Continuous integration
-- [ ] Production monitoring
-	- [ ] instrumenting
+- [x] Production monitoring
+	- [x] instrumenting
 - [ ] Event collaboration messaging
 - [ ] Continuous delivery
 

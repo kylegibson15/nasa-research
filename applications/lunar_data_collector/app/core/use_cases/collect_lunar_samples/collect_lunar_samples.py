@@ -33,6 +33,8 @@ class CollectLunarSamplesUseCase:
         # sample_classifications = await self.api_client.list_sample_classification()
         logging.debug(f"missions response: {missions_api_response}")
 
+        unique_sample_type = set()
+
         for mission_name in missions_api_response:
             mission = await self._get_mission(mission_name)
             samples = await self._get_samples_by_mission(mission)
@@ -40,9 +42,14 @@ class CollectLunarSamplesUseCase:
 
             mission.samples = samples
             mission.stations = stations
+
+            for sample in samples:
+                unique_sample_type.add(sample.sample_type)
             
             logging.debug(mission)
             all_missions.append(mission)
+
+        logging.debug(f"UNIQUE SAMPLES: {unique_sample_type}, COUNT: {len(unique_sample_type)}")
             # landmarks = await self.api_client.list_landmarks_by_mission(mission)
             # print(f"\n\tall landmarks: {landmarks}")
 

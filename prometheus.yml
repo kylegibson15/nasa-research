@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: lunar_data_collector
+    static_configs:
+      - targets: ['host.docker.internal:8000'] # When lunar_data_collector is running from localhost outside of Docker. 
+        labels:
+          environment: mixed-docker-local
+      - targets: ['localhost:8000'] # All services running from Docker
+        labels:
+          environment: docker

@@ -1,10 +1,13 @@
 import logging
+import time
 from typing import Annotated
 from uuid import UUID
 from fastapi import FastAPI, Path
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import SQLModel
+from prometheus_client import Counter, Histogram, make_asgi_app
+from functools import wraps
 
 from app.core.use_cases.collect_lunar_samples.collect_lunar_samples import CollectLunarSamplesUseCase
 # from app.core.use_cases.fetch_mission_data import FetchTechPortMissionDataUseCase
@@ -18,6 +21,27 @@ from app.infrastructure.data_access.station.station_repository import StationRep
 from app.infrastructure.nasa_lunar_samples.nasa_lunar_samples_api_client import NasaLunarSamplesApiClient
 # from app.infrastructure.nasa_tech_port_api_client import NasaTechPortApiClient
 from app.infrastructure.settings import Settings
+
+REQUEST_COUNT = Counter('request_count', 'Total number of requests')
+REQUEST_TIME = Histogram('request_duration_seconds', 'Request duration in seconds')
+ERROR_COUNT = Counter('error_count', 'Total number of errors')
+
+def time_it(func):
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        start_time = time.time()
+        try:
+            result = await func(*args, **kwargs)
+            REQUEST_COUNT.inc()
+            total_time = time.time() - start_time
+            REQUEST_TIME.observe(total_time)
+            logging.debug(f"PROMETHEUS LOGGING - {total_time}")
+            return result
+        except Exception as e:
+            ERROR_COUNT.inc()
+            raise e  # Re-raise the exception
+
+    return wrapper
 
 app = FastAPI()
 settings = Settings()
@@ -43,12 +67,17 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+metrics_app = make_asgi_app()
+app.mount("/metrics", metrics_app)
+
 @app.post("/init")
+@time_it
 async def init():
     await init_db()
     return {"Status": "Ok"}
 
 @app.post("/collect-lunar-samples")
+@time_it
 async def collect_lunar_samples_data():
     async with AsyncSession(async_engine) as session:
         try:
@@ -69,6 +98,7 @@ async def collect_lunar_samples_data():
             await session.close()
 
 @app.get("/mission/{mission_id}")
+@time_it
 async def get_mission_by_id(mission_id: Annotated[UUID | str, Path(title="The ID of the mission to get")],):
     async with AsyncSession(async_engine) as session:
         try:
@@ -81,6 +111,7 @@ async def get_mission_by_id(mission_id: Annotated[UUID | str, Path(title="The ID
             await session.close()
 
 @app.get("/missions")
+@time_it
 async def get_missions():
     async with AsyncSession(async_engine) as session:
         try:
@@ -93,6 +124,7 @@ async def get_missions():
             await session.close()
 
 @app.get("/samples")
+@time_it
 async def get_samples():
     async with AsyncSession(async_engine) as session:
         try:
@@ -105,6 +137,7 @@ async def get_samples():
             await session.close()
 
 @app.get("/stations")
+@time_it
 async def get_stations():
     async with AsyncSession(async_engine) as session:
         try:
