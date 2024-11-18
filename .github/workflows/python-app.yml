@@ -14,22 +14,19 @@ jobs:
   ci:
     strategy:
       fail-fast: false
-      matrix:
-        python-version: ["3.13"]
-        poetry-version: ["1.8.4"]
-        os: [ubuntu-22.04]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.13"
       - name: Run image
         uses: abatilo/actions-poetry@v2
         with:
-          poetry-version: ${{ matrix.poetry-version }}
+          poetry-version: "1.8.4"
       - name: View poetry --help
         run: |
           cd applications/lunar_data_collector
           poetry install
-          poetry run pytest
+      - name: test
+        run: poetry run pytest
