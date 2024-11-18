@@ -15,7 +15,7 @@
 - [ ] Production environment
 - [x] Integration tests
 - [ ] Using mock objects or any test doubles
-- [ ] Continuous integration
+- [x] Continuous integration
 - [x] Production monitoring
 	- [x] instrumenting
 - [ ] Event collaboration messaging
