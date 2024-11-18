@@ -24,9 +24,6 @@ jobs:
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: "1.8.4"
-      - name: change directory
-        working-directory: ./applications/lunar_data_collector
-        run: cd applications/lunar_data_collector
       - name: install
         working-directory: ./applications/lunar_data_collector
         run: poetry run install
