@@ -40,6 +40,14 @@ class MissionRepository:
             return entities
         except Exception as e:
             raise Exception(f"Error while getting all missions: {e}")
+        
+    async def get_mission_names_and_ids(self) -> list[tuple[str, int]]:
+        try:
+            statement = select(MissionModel.id, MissionModel.name)
+            results = await self.session.exec(statement)
+            return results.all()
+        except Exception as e:
+            raise Exception(f"Error while getting mission names and IDs: {e}")
 
     async def create_mission(self, entity: Mission) -> Mission:
         try:

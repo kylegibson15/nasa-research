@@ -13,6 +13,7 @@ from functools import wraps
 from app.core.use_cases.collect_lunar_samples.collect_lunar_samples import CollectLunarSamplesUseCase
 # from app.core.use_cases.fetch_mission_data import FetchTechPortMissionDataUseCase
 from app.core.use_cases.get_mission_by_id import GetMissionByIdUseCase
+from app.core.use_cases.get_mission_names import GetMissionNamesUseCase
 from app.core.use_cases.get_missions import GetMissionsUseCase
 from app.core.use_cases.get_samples.get_samples import GetSamplesUseCase
 from app.core.use_cases.get_stations import GetStationsUseCase
@@ -112,7 +113,9 @@ async def get_mission_by_id(mission_id: Annotated[UUID | str, Path(title="The ID
     async with AsyncSession(async_engine) as session:
         try:
             mission_repository = MissionRepository(session)
-            use_case = GetMissionByIdUseCase(mission_repository)
+            sample_repository = SampleRepository(session)
+            station_repository = StationRepository(session)
+            use_case = GetMissionByIdUseCase(mission_repository, sample_repository, station_repository)
             return await use_case.execute(mission_id)
         except Exception as e:
             logging.error(e)
@@ -128,6 +131,19 @@ async def get_missions():
             sample_repository = SampleRepository(session)
             station_repository = StationRepository(session)
             use_case = GetMissionsUseCase(mission_repository, sample_repository, station_repository)
+            return await use_case.execute()
+        except Exception as e:
+            logging.error(e)
+        finally:
+            await session.close()
+
+@app.get("/mission-names")
+@time_it
+async def get_mission_names():
+    async with AsyncSession(async_engine) as session:
+        try:
+            mission_repository = MissionRepository(session)
+            use_case = GetMissionNamesUseCase(mission_repository)
             return await use_case.execute()
         except Exception as e:
             logging.error(e)
