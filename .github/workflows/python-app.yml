@@ -27,14 +27,25 @@ jobs:
       - name: install
         working-directory: ./applications/lunar_data_collector
         run: poetry install
-      - name: test
+      - name: echo
         working-directory: ./applications/lunar_data_collector
         run: |
           echo ${{ vars.POSTGRES_USER }}
-          poetry run pytest
+          echo ${{ vars.POSTGRES_PASSWROD }}
+          echo ${{ vars.POSTGRES_DB }}
+          echo ${{ vars.PG_ASYNC_DSN }}
         env:
           NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
           POSTGRES_USER: ${{ vars.POSTGRES_USER }}
-          POSTGRES_PASSWROD: ${{ vars.POSTGRES_PASSWROD }}
+          postgres_password: ${{ vars.POSTGRES_PASSWROD }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          PG_ASYNC_DSN: ${{ vars.PG_ASYNC_DSN }}
+      - name: test
+        working-directory: ./applications/lunar_data_collector
+        run: poetry run pytest
+        env:
+          NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          postgres_password: ${{ vars.POSTGRES_PASSWROD }}
           POSTGRES_DB: ${{ vars.POSTGRES_DB }}
           PG_ASYNC_DSN: ${{ vars.PG_ASYNC_DSN }}
