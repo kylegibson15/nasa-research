@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        run: cd applications/lunar_data_collector
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -24,11 +25,7 @@ jobs:
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: "1.8.4"
-      - name: View poetry --help
-        run: |
-          
-          poetry install
+      - name: install
+        run: poetry install
       - name: test
-        run: |
-          cd applications/lunar_data_collector
-          poetry run pytest
+        run: poetry run pytest
