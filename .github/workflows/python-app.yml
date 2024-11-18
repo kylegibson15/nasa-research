@@ -26,7 +26,9 @@ jobs:
           poetry-version: "1.8.4"
       - name: View poetry --help
         run: |
-          cd applications/lunar_data_collector
+          
           poetry install
       - name: test
-        run: poetry run pytest
+        run: |
+          cd applications/lunar_data_collector
+          poetry run pytest
