@@ -33,6 +33,6 @@ jobs:
         env:
           NASA_API_KEY: abc
           POSTGRES_USER: postgres
-          POSGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: nasa_research
           PG_ASYNC_DSN: postgresql+asyncpg://postgres:postgres@localhost:5432/nasa_research
