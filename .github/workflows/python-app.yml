@@ -24,9 +24,9 @@ jobs:
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: "1.8.4"
+      - name: change directory
+        run: cd applications/lunar_data_collector
       - name: install
-        run: |
-          run: cd applications/lunar_data_collector
-          poetry run install
+        run: poetry run install
       - name: test
         run: poetry run pytest
