@@ -29,7 +29,9 @@ jobs:
         run: poetry install
       - name: test
         working-directory: ./applications/lunar_data_collector
-        run: poetry run pytest
+        run: |
+          echo ${{ vars.POSTGRES_USER }}
+          poetry run pytest
         env:
           NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
           POSTGRES_USER: ${{ vars.POSTGRES_USER }}
