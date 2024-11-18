@@ -21,7 +21,6 @@ jobs:
         with:
           python-version: "3.13"
       - name: Run image
-        working-directory: ./applications/lunar_data_collector
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: "1.8.4"
