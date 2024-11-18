@@ -26,7 +26,7 @@ jobs:
           poetry-version: "1.8.4"
       - name: install
         working-directory: ./applications/lunar_data_collector
-        run: poetry run install
+        run: poetry install
       - name: test
         working-directory: ./applications/lunar_data_collector
         run: poetry run pytest
