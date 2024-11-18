@@ -6,7 +6,6 @@ from app.infrastructure.nasa_lunar_samples.nasa_lunar_samples_responses import S
 class SampleMapper(Mapper[SampleApiResponse, Sample, SampleModel]):
     @staticmethod
     def response_to_entity(sample_raw: SampleApiResponse) -> Sample:
-        print(f"\nSAMPLE RESPONSE TO ENTITY:\n\t{sample_raw}\n")
         return Sample(
             original_sample_id=str(sample_raw["SAMPLEID"]) or "",
             generic_id=sample_raw["GENERIC"] or "",
@@ -25,7 +24,6 @@ class SampleMapper(Mapper[SampleApiResponse, Sample, SampleModel]):
 
     @staticmethod
     def entity_to_model(entity: Sample) -> SampleModel:
-        print(f"\nSAMPLE ENTITY TO MODEL\n\t{entity}\n")
         return SampleModel(
             id=entity.id,
             original_sample_id=entity.original_sample_id,
@@ -45,7 +43,6 @@ class SampleMapper(Mapper[SampleApiResponse, Sample, SampleModel]):
 
     @staticmethod
     def model_to_entity(model: SampleModel) -> Sample:
-        print(f"\nSAMPLE MODEL TO ENTITY\n\t{model}\n")
         return Sample(
             id=model.id,
             original_sample_id=model.original_sample_id,

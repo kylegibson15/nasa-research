@@ -5,7 +5,6 @@ from app.infrastructure.data_access.station.station_model import StationModel
 class StationMapper(Mapper[str, Station, StationModel]):
     @staticmethod
     def response_to_entity(station_name: str) -> Station:
-        print(f"\STATION RESPONSE TO ENTITY: {station_name}\n")
         return Station(
             name=station_name,
             # samples=list(),
@@ -15,7 +14,6 @@ class StationMapper(Mapper[str, Station, StationModel]):
     
     @staticmethod
     def entity_to_model(entity: Station) -> StationModel:
-        print(f"\STATION ENTITY TO MODEL: {entity}\n")
         return StationModel(
             id=entity.id,
             name=entity.name,
@@ -24,7 +22,6 @@ class StationMapper(Mapper[str, Station, StationModel]):
     
     @staticmethod
     def model_to_entity(model: StationModel) -> Station:
-        print(f"\STATION MODEL TO ENTITY: {model}\n")
         return Station(
             id=model.id,
             name=model.name,
