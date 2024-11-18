@@ -12,13 +12,13 @@ class TestMissionMapper(unittest.TestCase):
         mission_entity = MissionMapper.response_to_entity(mission_name)
 
         self.assertIsInstance(mission_entity, Mission)
-        self.assertIsNotNone(mission_entity.id)
+        self.assertIsNone(mission_entity.id)
         self.assertEqual(mission_entity.name, mission_name)
 
     def test_entity_to_model(self):
         mission_id = str(uuid4())
         mission_name = "Another Test Mission"
-        mission_entity = Mission(id=mission_id, name=mission_name)
+        mission_entity = Mission(id=mission_id, name=mission_name, samples=[], stations=[])
 
         mission_model = MissionMapper.entity_to_model(mission_entity)
 
