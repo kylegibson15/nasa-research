@@ -27,6 +27,6 @@ jobs:
       - name: install
         run: |
           run: cd applications/lunar_data_collector
-          poetry install
+          poetry run install
       - name: test
         run: poetry run pytest
