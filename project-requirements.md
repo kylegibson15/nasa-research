@@ -1,7 +1,7 @@
 # Project Requirements
 
-- [ ] Web application
-	- [ ] basic form
+- [x] Web application
+	- [x] basic form
 	- [ ] reporting
 - [x] Data collection
 	- [x] collect data from nasa api for moon
