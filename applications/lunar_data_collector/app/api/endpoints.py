@@ -2,6 +2,7 @@ import logging
 import time
 from typing import Annotated
 from uuid import UUID
+
 from fastapi import FastAPI, Path
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -20,6 +21,7 @@ from app.core.use_cases.get_stations import GetStationsUseCase
 from app.infrastructure.data_access.mission.mission_repository import MissionRepository
 from app.infrastructure.data_access.sample.sample_repository import SampleRepository
 from app.infrastructure.data_access.station.station_repository import StationRepository
+from app.infrastructure.data_access.landmark.landmark_repository import LandmarkRepository
 from app.infrastructure.nasa_lunar_samples.nasa_lunar_samples_api_client import NasaLunarSamplesApiClient
 # from app.infrastructure.nasa_tech_port_api_client import NasaTechPortApiClient
 from app.infrastructure.settings import Settings
@@ -70,10 +72,7 @@ async def init_db():
         await conn.run_sync(SQLModel.metadata.drop_all)
         await conn.run_sync(SQLModel.metadata.create_all)
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+logging.basicConfig(level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
 
@@ -90,16 +89,19 @@ async def init():
 @time_it
 async def collect_lunar_samples_data():
     async with AsyncSession(async_engine) as session:
+        logging.debug("collect_lunar_sample_data called")
         try:
             api_client = NasaLunarSamplesApiClient(settings)
             mission_repository = MissionRepository(session)
             sample_repository = SampleRepository(session)
             station_repository = StationRepository(session)
+            landmark_repository = LandmarkRepository(session)
             use_case = CollectLunarSamplesUseCase(
                 api_client, 
                 mission_repository, 
                 sample_repository,
-                station_repository
+                station_repository,
+                landmark_repository
             )
             return await use_case.execute()
         except Exception as e:

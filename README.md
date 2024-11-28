@@ -64,3 +64,12 @@ curl -X 'POST' \
 - `GET /missions`
 - `GET /samples`
 - `GET /stations`
+
+### Start the SQS 
+```shell
+# Create Queue
+poetry run awslocal sqs create-queue --queue-name analyze --region us-east-1
+
+# Send Test Message
+poetry run awslocal sqs send-message --region us-east-1 --queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/analyze --message-body 'Hello, NASA!' 
+```

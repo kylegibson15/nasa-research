@@ -35,7 +35,15 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: nasa_research
       NASA_API_KEY: empty
-
+  
+  localstack_sqs:
+    image: localstack/localstack
+    ports:
+      - '4566:4566'
+      - '4572:4572'
+    environment:
+      SERVICES: s3,sqs
+      
   prometheus:
     image: prom/prometheus:latest
     volumes:

@@ -11,19 +11,26 @@ from app.infrastructure.data_access.sample.sample_repository import SampleReposi
 from app.infrastructure.data_access.station.station_mapper import StationMapper
 from app.infrastructure.data_access.station.station_repository import StationRepository
 from app.infrastructure.nasa_lunar_samples.nasa_lunar_samples_api_client import NasaLunarSamplesApiClient
+from app.infrastructure.data_access.landmark.landmark_mapper import LandmarkMapper
+from app.infrastructure.data_access.landmark.landmark_repository import LandmarkRepository
+from app.infrastructure.event_messaging.message_producer import MessageProducer
 
 class CollectLunarSamplesUseCase:
     def __init__(
             self, 
-            api_client: NasaLunarSamplesApiClient, 
+            api_client: NasaLunarSamplesApiClient,
             mission_repository: MissionRepository, 
             sample_repository: SampleRepository,
-            station_repository: StationRepository
+            station_repository: StationRepository,
+            landmark_repository: LandmarkRepository,
+            message_producer: MessageProducer
         ):
         self.api_client = api_client
         self.mission_repository = mission_repository
         self.sample_repository = sample_repository
         self.station_repository = station_repository
+        self.landmark_repository = landmark_repository
+        self.message_producer = message_producer
         logging.info("fetch lunar samples data use case successfully initialized")
     
 
@@ -37,27 +44,25 @@ class CollectLunarSamplesUseCase:
 
         for mission_name in missions_api_response:
             mission = await self._get_mission(mission_name)
-            samples = await self._get_samples_by_mission(mission)
+            # samples = await self._get_samples_by_mission(mission)
             stations = await self._get_stations_by_mission(mission)
+            landmarks = await self._get_landmarks_by_mission(mission)
 
-            mission.samples = samples
+            # mission.samples = samples
             mission.stations = stations
+            mission.landmarks = landmarks
 
-            for sample in samples:
-                unique_sample_type.add(sample.sample_type)
+            # for sample in samples:
+            #     unique_sample_type.add(sample.sample_type)
             
-            logging.debug(mission)
+            print("COLLECT LUNAR SAMPLES")
+            logging.info(mission)
             all_missions.append(mission)
 
+            self.message_producer.send_message(mission)
+
         logging.debug(f"UNIQUE SAMPLES: {unique_sample_type}, COUNT: {len(unique_sample_type)}")
-            # landmarks = await self.api_client.list_landmarks_by_mission(mission)
-            # print(f"\n\tall landmarks: {landmarks}")
-
-            # for landmark in landmarks:
-            #     print(f"\n\tlandmark: {landmark}")
-            #     samples_by_landmark = await self.api_client.samples_by_landmark(mission, landmark)
-            #     print(f"\n\t\tsamples_by_landmark: {samples_by_landmark}")
-
+       
         # unique_ids = set()
         # for (sample_type, sample_subtype) in sample_classifications:
         #     print(f"sample type: {sample_type} & sample subtype: {sample_subtype}")
@@ -139,3 +144,26 @@ class CollectLunarSamplesUseCase:
             stations.append(station)
 
         return stations
+    
+    async def _get_landmarks_by_mission(self, mission: Mission) -> list[str]:
+        landmarks_by_mission = await self.api_client.list_landmarks_by_mission(mission)
+        landmarks = list()
+
+        for landmark_name in landmarks_by_mission:
+            if landmark_name is None:
+                continue
+
+            entity = LandmarkMapper.response_to_entity(landmark_name)
+            entity.mission_id = mission.id
+
+            landmark = await self.landmark_repository.get_landmark_by_name(entity.name)
+
+            if landmark is None:
+                landmark = await self.landmark_repository.create_landmark(entity)
+
+            # samples_by_landmark = await self.api_client.samples_by_landmark(mission, landmark)
+            # print(f"\n\t\tsamples_by_landmark: {samples_by_landmark}")
+            landmarks.append(landmark)
+
+            print(f"\n\tlandmark: {landmark}")
+            

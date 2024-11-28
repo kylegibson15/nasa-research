@@ -22,6 +22,7 @@ pytest = "^8.3.3"
 httpx = "^0.27.2"
 sqlmodel = "^0.0.22"
 prometheus-client = "^0.21.0"
+awscli-local = "^0.22.0"
 
 [tool.poetry.group.dev.dependencies]
 uvicorn = "^0.32.0"
