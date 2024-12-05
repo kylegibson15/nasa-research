@@ -1,5 +1,5 @@
 from uuid import UUID, uuid4
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 class MissionModel(SQLModel, table=True):
     __tablename__ = "missions"

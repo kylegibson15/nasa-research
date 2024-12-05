@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Any
-from uuid import UUID
 
 @dataclass
 class Sample:
@@ -17,5 +16,5 @@ class Sample:
     generic_description: str
     mission_id: str
     mission: Any | None
-    id: UUID | str | None = None
+    id: str | None = None
     

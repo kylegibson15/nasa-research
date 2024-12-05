@@ -1,3 +1,5 @@
+import dataclasses
+import json
 import logging
 
 from app.core.entities.mission import Mission
@@ -44,24 +46,21 @@ class CollectLunarSamplesUseCase:
 
         for mission_name in missions_api_response:
             mission = await self._get_mission(mission_name)
-            # samples = await self._get_samples_by_mission(mission)
+            samples = await self._get_samples_by_mission(mission)
             stations = await self._get_stations_by_mission(mission)
             landmarks = await self._get_landmarks_by_mission(mission)
 
-            # mission.samples = samples
+            mission.samples = samples
             mission.stations = stations
             mission.landmarks = landmarks
 
-            # for sample in samples:
-            #     unique_sample_type.add(sample.sample_type)
+            for sample in samples:
+                unique_sample_type.add(sample.sample_type)
             
-            print("COLLECT LUNAR SAMPLES")
             logging.info(mission)
             all_missions.append(mission)
-
-            self.message_producer.send_message(mission)
-
-        logging.debug(f"UNIQUE SAMPLES: {unique_sample_type}, COUNT: {len(unique_sample_type)}")
+            
+            self.message_producer.send_message(mission.name)
        
         # unique_ids = set()
         # for (sample_type, sample_subtype) in sample_classifications:
@@ -92,7 +91,7 @@ class CollectLunarSamplesUseCase:
     async def _get_mission(self, mission_name: str) -> Mission:
         mission_entity = MissionMapper.response_to_entity(mission_name)
         mission = await self.mission_repository.get_mission_by_name(mission_entity.name)
-
+        print(f"\nMISSION: {mission}\n")
         if mission is None:
             mission = await self.mission_repository.create_mission(mission_entity)
             
@@ -146,7 +145,7 @@ class CollectLunarSamplesUseCase:
         return stations
     
     async def _get_landmarks_by_mission(self, mission: Mission) -> list[str]:
-        landmarks_by_mission = await self.api_client.list_landmarks_by_mission(mission)
+        landmarks_by_mission = self.api_client.list_landmarks_by_mission(mission)
         landmarks = list()
 
         for landmark_name in landmarks_by_mission:

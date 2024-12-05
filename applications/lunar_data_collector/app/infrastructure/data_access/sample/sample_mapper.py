@@ -44,7 +44,7 @@ class SampleMapper(Mapper[SampleApiResponse, Sample, SampleModel]):
     @staticmethod
     def model_to_entity(model: SampleModel) -> Sample:
         return Sample(
-            id=model.id,
+            id=str(model.id),
             original_sample_id=model.original_sample_id,
             generic_id=model.generic_id,
             bag_number=model.bag_number,
@@ -56,7 +56,7 @@ class SampleMapper(Mapper[SampleApiResponse, Sample, SampleModel]):
             has_thin_section=model.has_thin_section,
             has_display=model.has_display,
             generic_description=model.generic_description,
-            mission_id=model.mission_id,
+            mission_id=str(model.mission_id),
             mission=None
             # mission=MissionMapper.model_to_entity(model.mission)
         )

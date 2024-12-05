@@ -12,5 +12,5 @@ $ poetry run pytest
 
 ### Run application
 ```shell
-$ poetry run uvicorn src.application:app --reload --port 8001
+$ poetry run python ./app/main.py
 ```

@@ -23,9 +23,9 @@ class LandmarkMapper(Mapper[str, Landmark, LandmarkModel]):
     @staticmethod
     def model_to_entity(model: LandmarkModel) -> Landmark:
         return Landmark(
-            id=model.id,
+            id=str(model.id),
             name=model.name,
             # samples=list()
             mission=None,
-            mission_id=model.mission_id
+            mission_id=str(model.mission_id)
         )

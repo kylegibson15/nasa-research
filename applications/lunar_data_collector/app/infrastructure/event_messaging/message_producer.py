@@ -1,17 +1,20 @@
-from typing import Any
 import boto3
 
 class MessageProducer:
     def __init__(self, queue_url: str):
         self.queue_url = queue_url
-        print(f"\nQUEUE URL: {self.queue_url}\n")
-        self.sqs_client = boto3.client('sqs', endpoint_url=self.queue_url)
-
-    def send_message(self, message_body: Any):
-        print(f"\nSENDING MESSAGE: {message_body}\n")
-        response = self.sqs_client.send_message(
-            QueueUrl=self.queue_url,
-            MessageBody="Hello, NASA"
+        self.sqs_client = boto3.client(
+            'sqs', 
+            endpoint_url=self.queue_url, 
+            region_name="us-east-1", 
+            aws_access_key_id="", 
+            aws_secret_access_key=""
         )
 
-        print(response['MessageId'])
+    def send_message(self, message_body: str):
+        response = self.sqs_client.send_message(
+            QueueUrl=self.queue_url,
+            MessageBody=message_body
+        )
+
+        print(f"\nMESSAGE RESPONSE: {response['MessageId']}\n")

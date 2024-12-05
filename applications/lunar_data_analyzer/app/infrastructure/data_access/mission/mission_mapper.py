@@ -1,6 +1,6 @@
-from app.core.entities.mission import Mission
-from app.infrastructure.data_access.mapper import Mapper
-from app.infrastructure.data_access.mission.mission_model import MissionModel
+from core.entities.mission import Mission
+from infrastructure.data_access.mapper import Mapper
+from infrastructure.data_access.mission.mission_model import MissionModel
 
 class MissionMapper(Mapper[str, Mission, MissionModel]):
     @staticmethod

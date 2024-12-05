@@ -6,9 +6,13 @@ services:
       context: ./applications/lunar_web_ui/
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "8081:80"
     depends_on:
       - lunar_data_collector
+    dns:
+      - 10.0.2.20
+    networks:
+      - ls
 
   lunar_db:
     image: postgres:latest
@@ -20,29 +24,75 @@ services:
       POSTGRES_DB: nasa_research
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    dns:
+      - 10.0.2.20
+    networks:
+      - ls
 
   lunar_data_collector:
     build: 
       context: ./applications/lunar_data_collector/
-      dockerfile: service.Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     depends_on:
       - lunar_db
+      - localstack_sqs
     environment:
       PG_ASYNC_DSN: postgresql+asyncpg://postgres:postgres@lunar_db:5432/nasa_research
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: nasa_research
       NASA_API_KEY: empty
+    dns:
+      - 10.0.2.20
+    networks:
+      - ls
   
+  # lunar_sqs_initializer:
+  #   build: 
+  #     context: ./applications/lunar_data_analyzer/
+  #     dockerfile: create_queue.Dockerfile
+  #   depends_on:
+  #     - localstack_sqs
+  #   environment:
+  #     PG_ASYNC_DSN: postgresql+asyncpg://postgres:postgres@lunar_db:5432/nasa_research
+  #     QUEUE_URL: http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/analyze
+  #     AWS_ENDPOINT_URL: http://sqs.us-east-1.localhost.localstack.cloud:4566
+  #   dns:
+  #     - 10.0.2.20
+  #   networks:
+  #     - ls
+  
+  lunar_data_analyzer:
+    build: 
+      context: ./applications/lunar_data_analyzer/
+      dockerfile: Dockerfile
+    depends_on:
+      - lunar_db
+      - localstack_sqs
+    environment:
+      PG_ASYNC_DSN: postgresql+asyncpg://postgres:postgres@lunar_db:5432/nasa_research
+      QUEUE_URL: http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/analyze
+      AWS_ENDPOINT_URL: http://sqs.us-east-1.localhost.localstack.cloud:4566
+    dns:
+      - 10.0.2.20
+    networks:
+      - ls
+
   localstack_sqs:
     image: localstack/localstack
     ports:
-      - '4566:4566'
-      - '4572:4572'
+      - "127.0.0.1:4566:4566"
+      - "127.0.0.1:4510-4559:4510-4559"
     environment:
       SERVICES: s3,sqs
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      ls:
+        ipv4_address: 10.0.2.20
       
   prometheus:
     image: prom/prometheus:latest
@@ -50,6 +100,10 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
+    dns:
+      - 10.0.2.20
+    networks:
+      - ls
 
   grafana:
     image: grafana/grafana:latest
@@ -60,8 +114,17 @@ services:
     environment:
       GF_SECURITY_ADMIN_PASSWORD: grafana
       GF_USERS_ALLOW_SIGN_UP: 'false'
+    dns:
+      - 10.0.2.20
+    networks:
+      - ls
 
 volumes:
   postgres_data:
 
+networks:
+  ls:
+    ipam:
+      config:
+        - subnet: 10.0.2.0/24
   

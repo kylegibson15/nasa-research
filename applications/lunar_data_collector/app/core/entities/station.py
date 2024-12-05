@@ -7,5 +7,5 @@ class Station:
     mission_id: str
     mission: Any | None
     name: str | None 
-    id: UUID | str | None = None
+    id: str | None = None
     
