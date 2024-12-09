@@ -49,21 +49,6 @@ services:
     networks:
       - ls
   
-  # lunar_sqs_initializer:
-  #   build: 
-  #     context: ./applications/lunar_data_analyzer/
-  #     dockerfile: create_queue.Dockerfile
-  #   depends_on:
-  #     - localstack_sqs
-  #   environment:
-  #     PG_ASYNC_DSN: postgresql+asyncpg://postgres:postgres@lunar_db:5432/nasa_research
-  #     QUEUE_URL: http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/analyze
-  #     AWS_ENDPOINT_URL: http://sqs.us-east-1.localhost.localstack.cloud:4566
-  #   dns:
-  #     - 10.0.2.20
-  #   networks:
-  #     - ls
-  
   lunar_data_analyzer:
     build: 
       context: ./applications/lunar_data_analyzer/

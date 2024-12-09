@@ -1,52 +1,61 @@
 import * as React from 'react';
-import { Card, CardContent, Button, CardActions, Typography } from '@mui/material';
-import StationList from './station-list';
+import { Card, CardContent, Button, CardActions, Typography, Grid2 as Grid } from '@mui/material';
+import HorizontalScroll from './horizontal-scroll';
+import SampleCard, { Sample } from './sample-card';
+import StationCard, { Station } from './station-card';
+import DocumentCard, { ArxivDocument } from './document-card';
 
-export interface Sample {
-    bag_number: string
-    generic_description: string
-    generic_id: string
-    has_display: boolean
-    has_thin_section: boolean
-    id: string
-    mission: null
-    mission_id: string
-    original_sample_id: string
-    original_weight: number
-    pristinity: number
-    pristinity_date: Date
-    sample_subtype: string
-    sample_type: string
-}
-export interface Station {
-    id: string;
-    mission_id: string;
-    name: string;
-}
 export interface Mission {
     id: string;
     name: string;
     samples: Sample[];
     stations: Station[];
+    // landmarks: Landmark[];
+    documents: ArxivDocument[];
 }
 export interface MissionCardProps {
     mission: Mission;
 }
-function MissionCard({ mission: { id, name, samples, stations } }: MissionCardProps) {
+function MissionCard({ mission: { id, name, samples, stations, documents, ...rest } }: MissionCardProps) {
+    console.log({ id, name, samples, stations, rest });
     return (
         <Card>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                     {name}
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Lizards are a widespread group of squamate reptiles, with over 6,000
-                    species, ranging across all continents except Antarctica
-                </Typography>
             </CardContent>
             <CardActions>
-                <Button size="small">Samples</Button>
-                <StationList stations={stations} />
+                <Grid>
+                    <Grid>
+                        <Typography gutterBottom variant="h6" component="div">
+                            Samples ({samples.length})
+                        </Typography>
+                        <HorizontalScroll>
+                            {samples.map(sample => <SampleCard sample={sample} />)}
+                        </HorizontalScroll>
+                    </Grid>
+
+                    <Grid>
+                        <Typography gutterBottom variant="h6" component="div">
+                            Stations ({stations.length})
+                        </Typography>
+                        <HorizontalScroll>
+                            {stations.map(station => <StationCard station={station} />)}
+                        </HorizontalScroll>
+                    </Grid>
+
+                    <Grid>
+                        <Typography gutterBottom variant="h6" component="div">
+                            Related Documents ({documents.length})
+                        </Typography>
+                        <HorizontalScroll>
+                            {documents.map(document => <DocumentCard document={document} />)}
+                        </HorizontalScroll>
+                    </Grid>
+                </Grid>
+
+
             </CardActions>
         </Card>
     );

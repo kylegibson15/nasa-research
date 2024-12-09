@@ -2,7 +2,6 @@ import boto3
 
 class SQSMessageConsumer:
     def __init__(self, queue_url: str):
-        print(f"\n\nQUEUE URL: {queue_url}\n\n")
         self.queue_url = queue_url
         self.sqs_client = boto3.client(
             "sqs",
@@ -25,9 +24,6 @@ class SQSMessageConsumer:
                 MaxNumberOfMessages=1,
                 WaitTimeSeconds=10
             )
-
-            print(f"RESPONSE: {response}")
-
 
             if 'Messages' in response:
                 for message in response['Messages']:

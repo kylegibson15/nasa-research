@@ -2,12 +2,11 @@
 
 - [x] Web application
 	- [x] basic form
-	- [ ] reporting
+	- [x] reporting
 - [x] Data collection
 	- [x] collect data from nasa api for moon
-	- [ ] https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=moon
 	- [x] https://curator.jsc.nasa.gov/rest/lunarapi/samples
-- [ ] Data analyzer
+- [x] Data analyzer
 - [x] Unit tests
 - [x] Data persistence
 	- [x] any data store
@@ -18,7 +17,7 @@
 - [x] Continuous integration
 - [x] Production monitoring
 	- [x] instrumenting
-- [ ] Event collaboration messaging
+- [x] Event collaboration messaging
 - [ ] Continuous delivery
 
 ## Goal

@@ -10,7 +10,7 @@ export interface MissionOptionType {
 export interface SearchFormProps {
     options: MissionOptionType[];
     value: MissionOptionType | null;
-    setValue: React.Dispatch<React.SetStateAction<MissionOptionType | null>>
+    setValue: React.Dispatch<React.SetStateAction<MissionOptionType | null>>;
 }
 
 export default function SearchForm({ options, value, setValue }: SearchFormProps) {
