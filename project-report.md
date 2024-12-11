@@ -1,14 +1,3 @@
-A good report should address the following:
-
-- [x] High level description of application developed for project.
-- [x] Whiteboard architecture diagram and description of the diagram.
-    - [x] You should discuss the processes and services in the diagram.
-- [x] Justifications for design decisions.
-    - [x] Example: Why NoSQL database chosen over SQL database?
-
-- [ ] system requirements for the project as well as 
-    - [ ] how testable those requirements were.
-
 ## High Level Application Description
 
 My project, NASA Research, is composed of;
@@ -37,3 +26,13 @@ There were a few architectural decisions that were made throughout the developme
 
 Another decision was to break the data analysis service out of the data collection service. I made this decision to have a clear separation of concern between performing analysis and collecting data. Though the data analysis service does collect data from the Arxiv API it is to support and provide more information on the mission that has been already collected. I also wanted to reduce the load of work that the data collection service would be performing considering it also hosts the APIs that allow the Web UI to query for the Missions data. 
 
+Some of the system requirements for the project were:
+- System must have a easy to use Web UI
+- System must utilize a database
+- System must utilize event messaging
+- System must collect data from web API
+- System must include monitoring
+- System must have a database schema
+- etc.
+
+Some of these requirements, such as "having a easy to use Web UI", were testable via manual interaction with the application. Others were testable via automation. For instance, I have integration tests that test the integration of the data collection service and the database, with mocked responses for the web API. This also covers the requirement to utilize a database. Other testing that could be implemented is end-to-end testing that could cover a users interaction on the frontend that triggers the collection service to fire off an event message and seeing that the analysis service picked up the message and the database was updated with a new entry. We could also test the resiliency of the system with loading testing by simulating a large volume of user interactions and api requests to see how well the system handles changes in user load. 
