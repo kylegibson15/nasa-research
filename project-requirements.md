@@ -13,7 +13,7 @@
 - [x] Rest collaboration internal or API endpoint
 - [ ] Production environment
 - [x] Integration tests
-- [ ] Using mock objects or any test doubles
+- [x] Using mock objects or any test doubles
 - [x] Continuous integration
 - [x] Production monitoring
 	- [x] instrumenting
