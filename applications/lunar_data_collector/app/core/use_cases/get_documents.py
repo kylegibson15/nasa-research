@@ -1,6 +1,5 @@
 from app.core.entities.document import Document
 from app.infrastructure.data_access.document.document_repository import DocumentRepository
-from app.infrastructure.data_access.document.document_repository import DocumentRepository
 
 
 class GetDocumentsUseCase:

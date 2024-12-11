@@ -18,7 +18,7 @@ class TestMissionMapper(unittest.TestCase):
     def test_entity_to_model(self):
         mission_id = str(uuid4())
         mission_name = "Another Test Mission"
-        mission_entity = Mission(id=mission_id, name=mission_name, samples=[], stations=[])
+        mission_entity = Mission(id=mission_id, name=mission_name, samples=[], stations=[], landmarks=[], documents=[], analytics=None)
 
         mission_model = MissionMapper.entity_to_model(mission_entity)
 
